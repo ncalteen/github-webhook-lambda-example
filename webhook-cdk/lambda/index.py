@@ -103,7 +103,6 @@ def lambda_handler(event: Dict, context: Dict) -> Dict:
         # There is not, create one.
         print("No branches. Creating default.")
         create_first_branch(repository_name=repository_name,
-                            repository_git_url=repository_git_url,
                             repository_clone_url=repository_clone_url)
         print("Default created.")
 
