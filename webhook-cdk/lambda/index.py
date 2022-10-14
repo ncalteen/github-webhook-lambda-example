@@ -48,6 +48,13 @@ def lambda_handler(event: Dict, context: Dict) -> Dict:
 
     Print statements log to Amazon CloudWatch Logs.
       https://docs.aws.amazon.com/lambda/latest/dg/monitoring-cloudwatchlogs.html
+    
+    Args:
+        event: The input event from GitHub
+        context: The Lambda function context
+    
+    Returns:
+        The Lambda function response JSON
     """
 
     # Get the GitHub webhook out of the API Gateway request body.
@@ -121,7 +128,14 @@ def lambda_handler(event: Dict, context: Dict) -> Dict:
 
 def verify_signatures(signature_header: str, body: str) -> bool:
     """
-    Returns True if the request signature matches the calculated one.
+    Checks if the request signature matches the expected signature
+    
+    Args:
+        signature_header: The signature header from GitHub
+        body: The request body
+        
+    Returns:
+        True if the request signature matches the calculated one, false otherwise
     """
     incoming_signature = re.sub(r'^sha1=', '', signature_header)
 
@@ -132,10 +146,15 @@ def verify_signatures(signature_header: str, body: str) -> bool:
     return incoming_signature == calculated_signature
 
 
-def create_first_branch(repository_name: str, repository_git_url: str, repository_clone_url: str) -> None:
+def create_first_branch(repository_name: str, repository_clone_url: str) -> None:
     """
     Creates an initial branch in the provided git repo.
+    
     Initial commit will contain a basic README.md file.
+    
+    Args:
+        repository_name: The repository name (without the organization name)
+        repository_clone_url: The HTTPS clone URL
     """
     # Remove any possible duplicate repo folder.
     print("Removing old directories")
@@ -147,7 +166,7 @@ def create_first_branch(repository_name: str, repository_git_url: str, repositor
 
     # Clone the repo.
     print("Cloning the repository")
-    os.system(f"git -C /tmp clone {repository_git_url} /tmp/{repository_name}")
+    os.system(f"git -C /tmp clone {repository_clone_url} /tmp/{repository_name}")
 
     # Configure git user
     print("Configuring git user")
@@ -173,6 +192,12 @@ def create_first_branch(repository_name: str, repository_git_url: str, repositor
 
 
 def edit_branch_protection(repository_full_name: str, branch_name: str) -> None:
+    """Adds branch protection to a repository branch
+    
+    Args:
+        repository_full_name: The repository name (with the organization name)
+        branch_name: The name of the branch to modify
+    """
     data = {
         "required_status_checks": None,
         "enforce_admins": True,
@@ -191,6 +216,11 @@ def edit_branch_protection(repository_full_name: str, branch_name: str) -> None:
 
 
 def create_issue(repository_full_name: str) -> None:
+    """Creates an issue in a repository
+    
+    Args:
+        repository_full_name: The name of the repository (with the organization name)
+    """
     data = {
         "title": "Repository automatically protected",
         "body": f"""This repository has been modified to include the following settings:

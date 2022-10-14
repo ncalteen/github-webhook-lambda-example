@@ -84,7 +84,7 @@ class WebhookCdkStack(Stack):
                 "RELEASE_VERSION": "0.1.0",
             },
             role=lambda_role,
-            timeout=Duration.seconds(15)
+            timeout=Duration.seconds(60)
         )
 
         # Add this layer to enable support for git commands in AWS Lambda.
