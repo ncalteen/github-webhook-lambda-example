@@ -127,15 +127,30 @@ To prepare the CDK app for deployment into your AWS account, the two secret ARNs
 
 1. Clone this repository to your workstation
 2. Open [./webhook-cdk/app.py](./webhook-cdk/app.py)
-3. On **Line 9**, set the value of **`github_token_arn`** to the ARN of the **`github_token`** secret you created
-4. On **Line 13**, set the value of **`github_webhook_secret_arn`** to the ARN of the **`webhook_secret`** secret you created
-5. Save your changes
+3. On each of the following lines, change the listed value
+
+   | Line Number | Variable name | Replace with... |
+   |-------------|---------------|-----------------|
+   | 9           | `github_token_arn` | ARN of the **`github_token`** secret you created |
+   | 13          | `github_webhook_secret_arn` | ARN of the **`webhook_secret`** secret you created |
+   | 17          | `github_user`               | The GitHub user to tag in issues when a repository is created |
+   | 21          | `git_email`                 | The email address to associate with the initial README commit |
+   | 22          | `git_name`                  | The name to associate with the initial README commit |
+
+4. Save your changes
+5. Create a new virtual environment and install the dependencies
+   
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
 
 ### Step 4: Deploy the CDK app
 
 In this step, you will deploy your CDK app to your AWS account.
 
-1. Run the following command from the command line or terminal from within your repository (make sure to change the outputs path to a path on your workstation)
+1. Run the following command from the command line or terminal from within the `webhook-cdk` repository (make sure to change the output path to a path on your workstation)
 
     ```bash
     cdk deploy --outputs-file /path/to/cdk-outputs.json 
