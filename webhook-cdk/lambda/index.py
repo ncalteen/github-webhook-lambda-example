@@ -162,10 +162,13 @@ def create_first_branch(repository_name: str, repository_clone_url: str) -> None
     # Make a new directory for the repo.
     print("Creating new directory to clone into")
     os.mkdir(f"/tmp/{repository_name}")
+    
+    # Add the token to the clone URL
+    tokenized_url = repository_clone_url.replace('//', f'//{github_user}:{github_token}@')
 
     # Clone the repo.
     print("Cloning the repository")
-    os.system(f"git -C /tmp clone {repository_clone_url} /tmp/{repository_name}")
+    os.system(f"git -C /tmp clone {tokenized_url} /tmp/{repository_name}")
 
     # Configure git user
     print("Configuring git user")
@@ -210,8 +213,11 @@ def edit_branch_protection(repository_full_name: str, branch_name: str) -> None:
         "restrictions": None
     }
 
-    _ = client.put(f"/repos/{repository_full_name}/branches/{branch_name}/protection",
-                   data=data)
+    response = client.put(f"/repos/{repository_full_name}/branches/{branch_name}/protection",
+                          data=data)
+    
+    if response.get('message') == 'Upgrade to GitHub Pro or make this repository public to enable this feature.':
+        print('Trying to add branch protection to a private repository.')
 
 
 def create_issue(repository_full_name: str) -> None:
